@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# Large model checkpoints (download separately, see README)
+OpenVoice/checkpoints_v2/
+OpenVoice/checkpoints_v2_0417.zip
+
+# Generated / cached files
+OpenVoice/outputs_v2/
+OpenVoice/processed/
+
+# Package metadata
+*.egg-info/
