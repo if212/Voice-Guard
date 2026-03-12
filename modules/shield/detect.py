@@ -107,3 +107,24 @@ class DeepfakeDetector:
             "spoof_prob": round(spoof_prob, 4),
             "bonafide_prob": round(bonafide_prob, 4),
         }
+
+    def full_analyze(self, audio_path: str) -> dict:
+        """Run W2V-AASIST for verdict + spectral/prosody for explainability.
+
+        Verdict comes solely from W2V-AASIST. Spectral and prosody features
+        are provided as raw values for the UI to display — no scoring.
+        """
+        from modules.shield.spectral import analyze_spectral
+        from modules.shield.prosody import analyze_prosody
+
+        w2v = self.detect(audio_path)
+        spectral = analyze_spectral(audio_path)
+        prosody = analyze_prosody(audio_path)
+
+        return {
+            "verdict": w2v["verdict"],
+            "confidence": w2v["confidence"],
+            "spoof_prob": w2v["spoof_prob"],
+            "spectral": spectral,
+            "prosody": prosody,
+        }
