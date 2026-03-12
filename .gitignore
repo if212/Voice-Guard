@@ -5,6 +5,10 @@ __pycache__/
 # Large model checkpoints (download separately, see README)
 OpenVoice/checkpoints_v2/
 OpenVoice/checkpoints_v2_0417.zip
+checkpoints/
+
+# External repos (cloned separately)
+SSL_Anti-spoofing/
 
 # Generated / cached files
 OpenVoice/outputs_v2/

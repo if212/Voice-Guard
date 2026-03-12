@@ -1,0 +1,13 @@
+---
+description: Python and Gradio patterns for VoiceGuard
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python & Gradio Conventions
+
+- **Imports**: Use `modules.attack.*` / `modules.shield.*` from repo root; OpenVoice via `sys.path` only in `app.py`.
+- **Gradio**: Build tab UIs in `modules/*/ui.py` (e.g. `build_attack_tab`, `build_shield_tab`); keep `app.py` thin — only `gr.Blocks`, tabs, and wiring.
+- **Audio**: Prefer `filepath` for Gradio `gr.Audio` when passing to backend; use project temp dir or OpenVoice `outputs_v2` for generated files.
+- **Errors**: Surface user-facing messages in UI (e.g. status Textbox); log full tracebacks server-side.
+- **Device**: Respect `--device` from CLI; use existing `VoiceCloner._resolve_device` pattern for new detector code.

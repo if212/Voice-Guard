@@ -1,0 +1,61 @@
+---
+description: VoiceGuard project context — env, architecture, and implementation plan
+alwaysApply: true
+---
+
+# VoiceGuard: Voice Cloning Attack & Detection
+
+## Environment
+
+- **Conda env**: `openvoice`. All development and commands (run, test, install) must use this environment.
+- Activate before running: `conda activate openvoice`
+- When suggesting terminal commands, assume `openvoice` is active or prefix with `conda run -n openvoice ...`
+
+## Project Structure
+
+- **Root**: `app.py` — Gradio app entry; mounts OpenVoice via `sys.path`, builds Attack + Shield tabs.
+- **OpenVoice**: Subfolder `OpenVoice/` — OpenVoice v2 (MyShell); do not restructure; use as library from project root.
+- **Modules**:
+  - `modules/attack/` — Voice cloning: `clone.py` (VoiceCloner), `ui.py` (build_attack_tab).
+  - `modules/shield/` — Deepfake detection (to implement): detector pipeline + Shield tab UI.
+- **Plan doc**: `VoiceGuard_Plan_v3.md` — architecture, timeline, tech stack.
+
+## Tabs & Features
+
+### Attack Tab (Voice Cloning Demo)
+
+- **Model**: OpenVoice v2.
+- **Flow**: Upload reference audio (3–30 s) → type text → "Clone & Speak" → cloned audio + (future: waveform, spectrogram, similarity score).
+- **Future**: Side-by-side original vs clone (waveform + spectrogram + similarity), "Send to Shield" button.
+
+### Shield Tab (Deepfake Detection)
+
+- **Goal**: Verdict REAL / SUSPICIOUS / FAKE, confidence, per-model score breakdown.
+- **Models (ensemble)**:
+  1. **W2V-AASIST** — neural TTS/vocoder artifacts.
+  2. **Spectral analysis** — unnatural frequency patterns (e.g. spectral gap 7–8 kHz).
+  3. **Prosody check** — robotic rhythm, flat pitch.
+- **UI**: Upload audio (or "Receive from Attack Tab") → Analyze → Verdict + confidence + per-model bars + spectrogram, pitch contour, energy plot.
+
+## Tech Stack
+
+| Area | Tool |
+|------|------|
+| UI | Gradio |
+| Voice cloning | OpenVoice v2 |
+| Deepfake detection | W2V-AASIST + spectral + prosody |
+| Audio | librosa, torchaudio |
+| Viz | matplotlib (spectrograms, pitch, energy) |
+| Metrics | scikit-learn (EER, ROC) |
+
+## Implementation Phases (from plan)
+
+- **Phase 2 (to Mar 13)**: Attack tab pipeline + UI; Shield tab W2V-AASIST + UI; "Send to Shield" wiring.
+- **Phase 3 (Mar 17–Apr 10)**: Ensemble (3 detectors, weighted vote); evaluate on ASVspoof 5 (EER, accuracy, ROC); closed-loop + robustness (noise, MP3, phone); failure analysis.
+- **Phase 4 (Apr 10–17)**: Polish Gradio UI (spectrogram, pitch contour, energy); docs + demo video.
+
+## Conventions
+
+- Keep OpenVoice usage confined to `modules/attack/` and `app.py` path setup; add Shield logic in `modules/shield/`.
+- Prefer file paths and imports relative to project root; `PROJECT_ROOT` / `OPENVOICE_ROOT` pattern already in `app.py`.
+- Device handling: support `--device` (cpu/cuda); default via `VoiceCloner._resolve_device` pattern.

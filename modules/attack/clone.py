@@ -3,6 +3,7 @@ import sys
 import types
 
 import torch
+import torch.nn.functional as F
 
 # Stub out MeCab so MeloTTS's japanese.py import succeeds without the real binary.
 # We only use English, so the Japanese code path is never called.
@@ -103,3 +104,10 @@ class VoiceCloner:
         )
 
         return output_path, self.sample_rate
+
+    def compute_similarity(self, ref_audio_path: str, cloned_audio_path: str) -> float:
+        """Cosine similarity between speaker embeddings of two audio files (0-1)."""
+        ref_se = self._converter.extract_se([ref_audio_path])
+        clone_se = self._converter.extract_se([cloned_audio_path])
+        sim = F.cosine_similarity(ref_se.view(1, -1), clone_se.view(1, -1))
+        return sim.item()
