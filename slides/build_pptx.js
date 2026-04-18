@@ -37,9 +37,10 @@ const C = {
   ACCENT:  "CADCFC",   // light blue ribbon
 };
 
-const FONT_HEAD = "Cambria";
-const FONT_BODY = "Calibri";
-const FONT_MONO = "Consolas";
+// Single clean sans-serif throughout for maximum readability.
+const FONT_HEAD = "Helvetica Neue";
+const FONT_BODY = "Helvetica Neue";
+const FONT_MONO = "Menlo";
 
 // =======================================================
 // Presentation setup
@@ -80,13 +81,8 @@ function addHeader(slide, title, tag) {
   });
 }
 
-function addFooter(slide, n, total) {
-  slide.addText(`VoiceGuard · ${n} / ${total}`, {
-    x: 0.45, y: H - 0.35, w: W - 0.9, h: 0.25,
-    fontFace: FONT_BODY, fontSize: 9, color: C.MUTED,
-    align: "right", margin: 0,
-  });
-}
+// Footer intentionally empty — no "VoiceGuard · N / 13" stamp.
+function addFooter(_slide, _n, _total) { /* no-op */ }
 
 function statCallout(slide, x, y, w, h, value, label, color) {
   // Background
@@ -149,7 +145,8 @@ const TOTAL = 13;
   // Byline
   s.addText([
     { text: "Jerry Zeng", options: { bold: true, color: "FFFFFF" } },
-    { text: "  +  teammate", options: { color: C.ACCENT } },
+    { text: "   ·   ", options: { color: C.ACCENT } },
+    { text: "Yuxin Liu", options: { bold: true, color: "FFFFFF" } },
   ], {
     x: 1.0, y: 5.6, w: W - 2, h: 0.4,
     fontFace: FONT_BODY, fontSize: 18, margin: 0,
@@ -168,7 +165,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Goals", "Rubric: 5 pts");
+  addHeader(s, "Goals", "Goals");
 
   // Left column — the "what"
   s.addText("What we set out to build", {
@@ -227,7 +224,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "System — Two-Tab Gradio App", "Rubric: 5 pts");
+  addHeader(s, "System — Two-Tab Gradio App", "System");
 
   // Attack tab card
   s.addShape(pres.shapes.RECTANGLE, {
@@ -319,7 +316,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Replicated  vs.  Added", "Rubric: 5 pts (System)");
+  addHeader(s, "Replicated  vs.  Added", "System");
 
   const headerOpts = {
     bold: true, color: "FFFFFF", fill: { color: C.NAVY },
@@ -391,7 +388,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Demo  —  Attack  →  Shield", "Rubric: 5 pts (Results)");
+  addHeader(s, "Live Demo  —  Attack  →  Shield", "Live Demo");
 
   // Step cards
   const steps = [
@@ -459,7 +456,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Results  —  ASVspoof 2019 LA  (full eval)", "Rubric: 5 pts (Results)");
+  addHeader(s, "Results  —  ASVspoof 2019 LA  (full eval)", "Results");
 
   // Confusion matrix on left
   s.addImage({
@@ -488,7 +485,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Results  —  13 Deepfake Attack Types", "Rubric: 5 pts (Results)");
+  addHeader(s, "Results  —  13 Deepfake Attack Types", "Results");
 
   // Per-attack chart
   s.addImage({
@@ -537,7 +534,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Results  —  Feature Calibration at Scale", "Rubric: 5 pts (Results)");
+  addHeader(s, "Results  —  Feature Calibration at Scale", "Results");
 
   // Feature distribution image — wide so landscape layout
   s.addImage({
@@ -578,7 +575,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "The Gap We Found", "⭐ headline finding");
+  addHeader(s, "The Gap We Found", "Results");
 
   // Left — big callouts showing FPR delta
   statCallout(s, 0.5, 1.4, 5.0, 1.6, "0.109 %", "FPR on ASVspoof 2019 LA\nstudio-quality, 7,355 real utterances", C.TEAL);
@@ -622,7 +619,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Future Work  —  one step", "Rubric: 5 pts");
+  addHeader(s, "Future Work  —  one step", "Future Work");
 
   // Big banner with the ONE step
   s.addShape(pres.shapes.RECTANGLE, {
@@ -694,7 +691,7 @@ const TOTAL = 13;
 {
   const s = pres.addSlide();
   s.background = { color: C.BG };
-  addHeader(s, "Justification  —  evidence from our eval", "Rubric: 5 pts");
+  addHeader(s, "Justification  —  evidence from our eval", "Justification");
 
   // Four evidence cards
   const cards = [
@@ -816,23 +813,14 @@ const TOTAL = 13;
   });
 
   s.addText("Q&A", {
-    x: 1.0, y: 2.4, w: W - 2, h: 1.8,
-    fontFace: FONT_HEAD, fontSize: 120, bold: true, color: "FFFFFF",
+    x: 1.0, y: 2.6, w: W - 2, h: 1.8,
+    fontFace: FONT_HEAD, fontSize: 140, bold: true, color: "FFFFFF",
     align: "left", valign: "middle", margin: 0,
   });
   s.addText("Thanks for listening.", {
-    x: 1.0, y: 4.3, w: W - 2, h: 0.7,
-    fontFace: FONT_HEAD, fontSize: 26, color: C.ACCENT, italic: true,
+    x: 1.0, y: 4.7, w: W - 2, h: 0.7,
+    fontFace: FONT_HEAD, fontSize: 28, color: C.ACCENT, italic: true,
     align: "left", margin: 0,
-  });
-
-  // Small anticipated-Q hint at bottom
-  s.addText([
-    { text: "Anticipated:  ", options: { color: C.ACCENT, italic: true } },
-    { text: "why 2019 LA? · 5 in-the-wild samples? · fine-tune in-house? · heatmap as explanation?", options: { color: "FFFFFF", fontSize: 12 } },
-  ], {
-    x: 1.0, y: 6.4, w: W - 2, h: 0.5,
-    fontFace: FONT_BODY, fontSize: 12, margin: 0,
   });
 }
 
