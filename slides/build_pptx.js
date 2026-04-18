@@ -40,6 +40,9 @@ const C = {
 // Single clean sans-serif throughout for maximum readability.
 const FONT_HEAD = "Helvetica Neue";
 const FONT_BODY = "Helvetica Neue";
+// Display font for large numbers — tabular, modern, great for stats.
+// Menlo on macOS (user's laptop), Consolas on Windows fallback.
+const FONT_NUMBER = "Menlo";
 const FONT_MONO = "Menlo";
 
 // =======================================================
@@ -98,8 +101,9 @@ function statCallout(slide, x, y, w, h, value, label, color) {
   });
   slide.addText(value, {
     x: x + 0.18, y: y + 0.08, w: w - 0.25, h: h * 0.52,
-    fontFace: FONT_HEAD, fontSize: 32, bold: true,
-    color: color || C.NAVY, valign: "top", margin: 0,
+    fontFace: FONT_NUMBER, fontSize: 30, bold: true,
+    color: color || C.NAVY, charSpacing: -1,
+    valign: "top", margin: 0,
   });
   slide.addText(label, {
     x: x + 0.18, y: y + h * 0.56, w: w - 0.25, h: h * 0.42,
@@ -157,6 +161,12 @@ const TOTAL = 13;
     x: 1.0, y: 6.1, w: W - 2, h: 0.35,
     fontFace: FONT_BODY, fontSize: 13, color: C.ACCENT, italic: true, margin: 0,
   });
+
+  s.addNotes(
+    "Hi everyone, we're Jerry and Yuxin. Today we're presenting VoiceGuard " +
+    "— a single application that can both clone a voice and catch it. " +
+    "We built this for 14-795 this semester."
+  );
 }
 
 // =======================================================
@@ -214,6 +224,17 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 12, color: C.MUTED, italic: true,
     valign: "top", margin: 0,
   });
+
+  s.addNotes(
+    "Our starting goal was to build one tool where anyone can clone a voice " +
+    "from as little as three seconds of reference audio, and detect whether " +
+    "an audio clip is AI-generated. Voice-cloning scams are projected at " +
+    "$40 billion by 2027, and there's no open-source tool today that pairs " +
+    "cloning and detection in one interface.\n\n" +
+    "After our Challenge Analysis, we refined this goal: not just 'does the " +
+    "detector work?', but 'is it calibrated and does it generalize beyond " +
+    "the benchmark?'. That question drives everything in the Results section."
+  );
 
   addFooter(s, 2, TOTAL);
 }
@@ -307,6 +328,18 @@ const TOTAL = 13;
     align: "center", valign: "top", margin: 0,
   });
 
+  s.addNotes(
+    "VoiceGuard is a two-tab Gradio app. The Attack tab uses OpenVoice v2 " +
+    "from MyShell — it takes a short reference clip, extracts a speaker " +
+    "embedding, generates base speech with MeloTTS, and converts the tone " +
+    "color to match the target speaker.\n\n" +
+    "The Shield tab uses W2V-AASIST from Tak et al. — a wav2vec 2.0 XLSR " +
+    "encoder with 300 million parameters plus a graph-attention backend " +
+    "that classifies bonafide versus spoof. A single-click 'Send to Shield' " +
+    "button hands the cloned audio from Attack over to the detector. " +
+    "End-to-end in under 30 seconds — which we'll show live in two slides."
+  );
+
   addFooter(s, 3, TOTAL);
 }
 
@@ -379,6 +412,17 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 12.5, color: C.INK,
   });
 
+  s.addNotes(
+    "To be clear about what's ours and what's not: we used OpenVoice v2 and " +
+    "W2V-AASIST as-is with their pretrained weights — we didn't retrain " +
+    "either model.\n\n" +
+    "What we built from scratch is everything in bold here: the two-tab " +
+    "Gradio app, the Send-to-Shield workflow, the attention-heatmap overlay, " +
+    "the 8-feature acoustic dashboard, the dataset-wide evaluation pipeline " +
+    "for all 71,237 utterances, the feature-distribution calibration script, " +
+    "and the in-the-wild domain-gap test."
+  );
+
   addFooter(s, 4, TOTAL);
 }
 
@@ -441,11 +485,17 @@ const TOTAL = 13;
     valign: "top", margin: 0,
   });
 
-  s.addText("Demo recording available  ·  fallback if live demo fails", {
-    x: 0.5, y: 6.2, w: W - 1.0, h: 0.4,
-    fontFace: FONT_BODY, fontSize: 11, color: C.MUTED, italic: true,
-    align: "center", valign: "top", margin: 0,
-  });
+  s.addNotes(
+    "Let me show it live. [Click Clone & Speak.]\n\n" +
+    "Right now OpenVoice v2 is extracting the speaker embedding from our " +
+    "reference clip and generating speech with MeloTTS. It takes about " +
+    "15 seconds on CPU.\n\n" +
+    "[Wait for the cloned audio to appear; play it.]\n\n" +
+    "That sounds like the reference speaker saying our text. Now I click " +
+    "Send to Shield. [Click; switch to Shield tab.]\n\n" +
+    "And the verdict: FAKE @ 99.97 % confidence, with the attention " +
+    "heatmap showing which frequency bands the detector focused on."
+  );
 
   addFooter(s, 5, TOTAL);
 }
@@ -475,6 +525,18 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 11, color: C.MUTED, italic: true,
     align: "center", margin: 0,
   });
+
+  s.addNotes(
+    "At full scale on ASVspoof 2019 LA — that's 71,237 utterances, " +
+    "7,355 bonafide plus 63,882 spoofed — here's what the detector does.\n\n" +
+    "EER is 0.146 %. Overall accuracy is 99.77 %. The false-positive rate " +
+    "is 0.109 % — just 8 out of 7,355 real speakers mis-flagged as fake. " +
+    "False-negative rate is 0.244 %.\n\n" +
+    "These numbers match what the original W2V-AASIST paper reports on " +
+    "this benchmark (around 0.7 % EER). So on studio-quality audio, " +
+    "the detector works exactly as advertised. That's the encouraging half " +
+    "of the story — the surprising half comes in a few slides."
+  );
 
   addFooter(s, 6, TOTAL);
 }
@@ -525,6 +587,19 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 12, color: C.MUTED, italic: true, margin: 0,
   });
 
+  s.addNotes(
+    "Breaking the results down by attack type. We see all 13 deepfake " +
+    "methods in the eval set — A07 through A19, covering TTS and " +
+    "voice-conversion methods.\n\n" +
+    "7 of them are detected at exactly 100 %. The hardest is A10, " +
+    "an end-to-end TTS with a WaveNet vocoder, at 98.5 %. A11 with " +
+    "WaveRNN and A19 — a transfer-function TTS + VC — come in at " +
+    "99.4 % and 99.6 %.\n\n" +
+    "Mean detection across all thirteen is 99.8 %. Key takeaway: " +
+    "no attack type is a systemic blind spot — the detector generalizes " +
+    "across synthesis methods."
+  );
+
   addFooter(s, 7, TOTAL);
 }
 
@@ -566,6 +641,19 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 10.5, color: C.MUTED, italic: true, margin: 0,
   });
 
+  s.addNotes(
+    "This slide directly answers a weakness we raised in our Challenge " +
+    "Analysis: 'the acoustic feature values in the Shield tab have no " +
+    "baseline context.' Back then we had only 14 samples. Now we have " +
+    "71,237.\n\n" +
+    "Looking at the violin plots for our 8 acoustic features — Shimmer, " +
+    "F0 CV, Energy CV, and Spectral Centroid all separate cleanly between " +
+    "real and fake at scale. That's enough data to support a percentile-" +
+    "based UI: when the user sees 'Jitter: 0.024', we can tell them " +
+    "that's the 87th percentile of bonafide samples.\n\n" +
+    "Weakness #2 from our Challenge Analysis is resolved."
+  );
+
   addFooter(s, 8, TOTAL);
 }
 
@@ -588,8 +676,8 @@ const TOTAL = 13;
   });
   s.addText("~ 730×", {
     x: 0.6, y: 5.1, w: 4.8, h: 1.0,
-    fontFace: FONT_HEAD, fontSize: 56, bold: true, color: C.ORANGE,
-    align: "center", valign: "middle", margin: 0,
+    fontFace: FONT_NUMBER, fontSize: 56, bold: true, color: C.ORANGE,
+    charSpacing: -2, align: "center", valign: "middle", margin: 0,
   });
   s.addText("FPR increase from benchmark → wild", {
     x: 0.6, y: 6.0, w: 4.8, h: 0.6,
@@ -609,6 +697,17 @@ const TOTAL = 13;
     fontFace: FONT_BODY, fontSize: 12, color: C.INK, italic: true,
     align: "center", valign: "middle", margin: 0,
   });
+
+  s.addNotes(
+    "Now here's the real finding — the headline of this project.\n\n" +
+    "On the benchmark, false-positive rate is 0.109 %. On just 5 recordings " +
+    "of real humans — phone and laptop microphones, people we know speaking " +
+    "naturally — the false-positive rate is 80 %. That's 4 out of 5 real " +
+    "humans mis-flagged as AI-generated.\n\n" +
+    "Roughly a 730× degradation, purely from distribution shift. The model " +
+    "is near-perfect on its training distribution, and catastrophic on " +
+    "everyday audio. This gap sets up everything that follows."
+  );
 
   addFooter(s, 9, TOTAL);
 }
@@ -682,6 +781,19 @@ const TOTAL = 13;
     valign: "top", margin: 0,
   });
 
+  s.addNotes(
+    "Our one recommended next step: domain-adaptive fine-tuning on diverse " +
+    "real-world speech.\n\n" +
+    "Concretely: collect at least 1,000 hours of real human audio, covering " +
+    "phone codecs like µ-law, Opus, GSM, consumer microphones — laptop, " +
+    "earbuds, headset — noisy conditions (cafés, cars, wind), and 50+ " +
+    "demographically diverse speakers. Pool that with ASVspoof and fine-" +
+    "tune W2V-AASIST end-to-end, then re-evaluate.\n\n" +
+    "Resources to think big: 1 A100-week of GPU compute, roughly 2 FTE-" +
+    "months for data collection and labelling, and $5–10k for microphone " +
+    "kits and speaker honoraria."
+  );
+
   addFooter(s, 10, TOTAL);
 }
 
@@ -753,6 +865,23 @@ const TOTAL = 13;
     align: "center", margin: 0,
   });
 
+  s.addNotes(
+    "Four pieces of evidence from our own eval, all pointing to data — " +
+    "not model capacity — as the bottleneck.\n\n" +
+    "One: benchmark FPR is already near zero at 0.109 % on 7,355 real " +
+    "samples. Making the model bigger won't drive that lower.\n\n" +
+    "Two: in-the-wild FPR is 80 % — a ~730× degradation that scales with " +
+    "distribution mismatch, not model size.\n\n" +
+    "Three: the W2V-AASIST paper itself reports sub-1 % EER when training " +
+    "and test distributions match; our reproduction is 0.146 %. The " +
+    "architecture has plenty of capacity.\n\n" +
+    "Four: at full 71k scale, our acoustic features already separate real " +
+    "from fake cleanly. The signal exists in the audio — the training set " +
+    "just needs to look like deployment.\n\n" +
+    "Fine-tuning on diverse real speech is higher leverage than any " +
+    "architectural change."
+  );
+
   addFooter(s, 11, TOTAL);
 }
 
@@ -796,6 +925,19 @@ const TOTAL = 13;
     });
   });
 
+  s.addNotes(
+    "To summarize.\n\n" +
+    "One: we built an integrated clone + detect tool with an end-to-end " +
+    "Attack → Shield hand-off in under 30 seconds.\n\n" +
+    "Two: we benchmarked at full 71k scale — 99.77 % accuracy, " +
+    "0.109 % FPR, EER 0.146 %.\n\n" +
+    "Three: we found an 80 % FPR on in-the-wild real audio — a ~730× " +
+    "gap — that's the open problem.\n\n" +
+    "Four: we recommend collecting diverse real-world speech and " +
+    "domain-adapting the detector.\n\n" +
+    "Happy to take questions."
+  );
+
   addFooter(s, 12, TOTAL);
 }
 
@@ -822,6 +964,21 @@ const TOTAL = 13;
     fontFace: FONT_HEAD, fontSize: 28, color: C.ACCENT, italic: true,
     align: "left", margin: 0,
   });
+
+  s.addNotes(
+    "Thanks — happy to take questions.\n\n" +
+    "Things to be ready for:\n" +
+    "- Why ASVspoof 2019 LA rather than 2021 DF? Pretrained weights are " +
+    "  exactly for this benchmark; 13 attack types are clearly labelled; " +
+    "  paper-comparable.\n" +
+    "- Why only 5 in-the-wild samples? Proof of concept; a proper study " +
+    "  is the Future-Work dataset we just proposed.\n" +
+    "- Could you fine-tune in-house? The full 71k eval alone took ~8 hrs " +
+    "  on M4 Pro CPU; training needs GPU cluster.\n" +
+    "- What about the attention heatmap as explanation? Coarse — it shows " +
+    "  *where* the model looks but not *why*; see Challenge Analysis for " +
+    "  deeper discussion."
+  );
 }
 
 // =======================================================
